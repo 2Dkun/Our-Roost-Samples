@@ -6,103 +6,103 @@ using UnityEngine.SceneManagement;
 
 public class TitleManager : MonoBehaviour {
 
-	// Public display objects
-	public Sprite[] menu = new Sprite[2]; // Allows for change in size of menu
-	public GameObject menuObj; // Object that will present the current menu
-	public Text[] main = new Text[4]; // Displays main options
-	public Text[] options = new Text[3]; // Displays settings
-	public Text[] controlTxt = new Text[8]; // Displays controls
-	public GameObject controlDisplay; // Object that will present the controls
-	public Text[] resolutionTxt = new Text[5]; // Displays resolutions
-	public Text[] sounds = new Text[4]; // Displays sounds
-	public Text[] soundNums = new Text[3]; // Displays sound numbers
-	public GameObject[] sliders = new GameObject[6]; // Displays sliders
-	public GameObject instructions; // Displays controls to newer players
-	public Text[] saveFiles = new Text[6]; // Displays save data
-	public GameObject[] saveSlots = new GameObject[3]; // Displays save slots
-	public Text[] fileOpts = new Text[3]; // Displays file options
-	public Text[] deletePrompt = new Text[3]; // Displays prompt to delete save
-	public static int curSave = 1; // Stores the current save file
-	public static GameProgress curFile = DataManager.file1; // Points to loaded file(set as file1 by default)
+    // Public display objects
+    public Sprite[] menu = new Sprite[2]; // Allows for change in size of menu
+    public GameObject menuObj; // Object that will present the current menu
+    public Text[] main = new Text[4]; // Displays main options
+    public Text[] options = new Text[3]; // Displays settings
+    public Text[] controlTxt = new Text[8]; // Displays controls
+    public GameObject controlDisplay; // Object that will present the controls
+    public Text[] resolutionTxt = new Text[5]; // Displays resolutions
+    public Text[] sounds = new Text[4]; // Displays sounds
+    public Text[] soundNums = new Text[3]; // Displays sound numbers
+    public GameObject[] sliders = new GameObject[6]; // Displays sliders
+    public GameObject instructions; // Displays controls to newer players
+    public Text[] saveFiles = new Text[6]; // Displays save data
+    public GameObject[] saveSlots = new GameObject[3]; // Displays save slots
+    public Text[] fileOpts = new Text[3]; // Displays file options
+    public Text[] deletePrompt = new Text[3]; // Displays prompt to delete save
+    public static int curSave = 1; // Stores the current save file
+    public static GameProgress curFile = DataManager.file1; // Points to loaded file(set as file1 by default)
 
-	// Menu Navigation
-	private enum menus {INSTRUCTIONS, MAIN, FILESELECT, FILEOPT, DELETE, VSFILE, OPTIONS, CONTROLS, INPUT, RESOLUTION, SOUNDS}; // Label each menu
-	private int curOpt, maxOpt, curMenu; // Used to determine current menu and selection
-	// Volume Adjustment
-	private int[] newVolume = new int[3];
-	private int sliderDelay = 0; // Used to delay fast slider movement
-	// Input Adjustment
-	private KeyCode[] tempControls = new KeyCode[7]; // Used to remember the previous controls
-	// Resolution Adjustment
-	private int newResolution;
+    // Menu Navigation
+    private enum menus {INSTRUCTIONS, MAIN, FILESELECT, FILEOPT, DELETE, VSFILE, OPTIONS, CONTROLS, INPUT, RESOLUTION, SOUNDS}; // Label each menu
+    private int curOpt, maxOpt, curMenu; // Used to determine current menu and selection
+    // Volume Adjustment
+    private int[] newVolume = new int[3];
+    private int sliderDelay = 0; // Used to delay fast slider movement
+    // Input Adjustment
+    private KeyCode[] tempControls = new KeyCode[7]; // Used to remember the previous controls
+    // Resolution Adjustment
+    private int newResolution;
 
     public GameObject mainSFX;
     public AudioClip encMusic, select, cancel;
     private bool startGame;
     public GameObject blackScreen;
 
-	// Called when the script is opened
-	void Awake() {
-		Application.targetFrameRate = 60;
-		DataManager.LoadOptions(); // Load options
-		DataManager.Load(); // Load save files
-	}
+    // Called when the script is opened
+    void Awake() {
+        Application.targetFrameRate = 60;
+        DataManager.LoadOptions(); // Load options
+        DataManager.Load(); // Load save files
+    }
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         startGame = false;
-		sliderDelay = 0; // Delay not being used at this point
-		menuObj.GetComponent<SpriteRenderer> ().sprite = menu[1]; // Start with smaller menu
-		UpdateRes(DataManager.savedOptions.resolution); // Apply saved resolution
+        sliderDelay = 0; // Delay not being used at this point
+        menuObj.GetComponent<SpriteRenderer> ().sprite = menu[1]; // Start with smaller menu
+        UpdateRes(DataManager.savedOptions.resolution); // Apply saved resolution
 
-		// If there's been save progress, don't show the instructions
-		if (DataManager.file1.getTime() > 0.0f || DataManager.file2.getTime() > 0.0f || DataManager.file3.getTime() > 0.0f) {
-			curMenu = (int)menus.MAIN;
-			curOpt = 0;
-			maxOpt = 4;
-			UpdateSelection(main);
-			TextDisplay(main, true);
-			instructions.GetComponent<SpriteRenderer> ().enabled = false; // Hide instructions
-		}
-		else {
-			curOpt = 0;
-			maxOpt = 1;
-			TextDisplay(main, false);
-			instructions.GetComponent<SpriteRenderer> ().enabled = true; // Show instructions
-		}
+        // If there's been save progress, don't show the instructions
+        if (DataManager.file1.getTime() > 0.0f || DataManager.file2.getTime() > 0.0f || DataManager.file3.getTime() > 0.0f) {
+            curMenu = (int)menus.MAIN;
+            curOpt = 0;
+            maxOpt = 4;
+            UpdateSelection(main);
+            TextDisplay(main, true);
+            instructions.GetComponent<SpriteRenderer> ().enabled = false; // Hide instructions
+        }
+        else {
+            curOpt = 0;
+            maxOpt = 1;
+            TextDisplay(main, false);
+            instructions.GetComponent<SpriteRenderer> ().enabled = true; // Show instructions
+        }
 
-		// Hide everything else
-		TextDisplay(options, false);
-		TextDisplay(soundNums, false);
-		TextDisplay(saveFiles, false);
-		TextDisplay(controlTxt, false);
-		TextDisplay(resolutionTxt, false);
-		TextDisplay(sounds, false);
-		TextDisplay(fileOpts, false);
-		TextDisplay(deletePrompt, false);
-		ImageDisplay(saveSlots, false);
-		ImageDisplay(sliders, false);
-		controlDisplay.GetComponent<SpriteRenderer> ().enabled = false;
+        // Hide everything else
+        TextDisplay(options, false);
+        TextDisplay(soundNums, false);
+        TextDisplay(saveFiles, false);
+        TextDisplay(controlTxt, false);
+        TextDisplay(resolutionTxt, false);
+        TextDisplay(sounds, false);
+        TextDisplay(fileOpts, false);
+        TextDisplay(deletePrompt, false);
+        ImageDisplay(saveSlots, false);
+        ImageDisplay(sliders, false);
+        controlDisplay.GetComponent<SpriteRenderer> ().enabled = false;
 
-		// Update from saved data
-		for (int i = 0; i < 3; i++) {
-			newVolume[i] = DataManager.savedOptions.volume[i]; // Initialize a new volume variable
-			soundNums[i].text = DataManager.savedOptions.volume[i].ToString(); // Update volume amount
-			sliders[i+3].transform.localPosition = new Vector2((DataManager.savedOptions.volume[i] * 0.019f) - 0.95f, 0);
-		}
-		for (int i = 0; i < 7; i++) {
-			tempControls[i] = DataManager.savedOptions.controls[i]; // Update controls
-			controlTxt[i].GetComponent<Text>().text = DataManager.savedOptions.controls[i].ToString();
-		}
-		newResolution = DataManager.savedOptions.resolution; // Update resolution
-		saveFiles[0].GetComponent<Text> ().text = "File 1"; // Update save files
-		saveFiles[3].GetComponent<Text> ().text = ToTime(DataManager.file1.getTime());
-		saveFiles[4].GetComponent<Text> ().text = ToTime(DataManager.file2.getTime());
-		saveFiles[5].GetComponent<Text> ().text = ToTime(DataManager.file3.getTime());
-	}
-		
-	// Update is called once per frame
-	void Update () {
+        // Update from saved data
+        for (int i = 0; i < 3; i++) {
+            newVolume[i] = DataManager.savedOptions.volume[i]; // Initialize a new volume variable
+            soundNums[i].text = DataManager.savedOptions.volume[i].ToString(); // Update volume amount
+            sliders[i+3].transform.localPosition = new Vector2((DataManager.savedOptions.volume[i] * 0.019f) - 0.95f, 0);
+        }
+        for (int i = 0; i < 7; i++) {
+            tempControls[i] = DataManager.savedOptions.controls[i]; // Update controls
+            controlTxt[i].GetComponent<Text>().text = DataManager.savedOptions.controls[i].ToString();
+        }
+        newResolution = DataManager.savedOptions.resolution; // Update resolution
+        saveFiles[0].GetComponent<Text> ().text = "File 1"; // Update save files
+        saveFiles[3].GetComponent<Text> ().text = ToTime(DataManager.file1.getTime());
+        saveFiles[4].GetComponent<Text> ().text = ToTime(DataManager.file2.getTime());
+        saveFiles[5].GetComponent<Text> ().text = ToTime(DataManager.file3.getTime());
+    }
+        
+    // Update is called once per frame
+    void Update () {
         if(startGame) {
             if(blackScreen.GetComponent<SpriteRenderer>().color.a == 0 && curFile.getTime() <= 0) {
                 // Play skill sound effect
@@ -672,87 +672,87 @@ public class TitleManager : MonoBehaviour {
                 }
             }
         }
-	}
+    }
 
-	// Updates the display on the current selection
-	void UpdateSelection(Text[] t){
-		for (int i = 0; i < maxOpt; i++) {
-			if (i == curOpt) {
-				t[i].color = Color.black;
-			} else {
-				t[i].color = Color.white;
-			}
-		}
-	}
+    // Updates the display on the current selection
+    void UpdateSelection(Text[] t){
+        for (int i = 0; i < maxOpt; i++) {
+            if (i == curOpt) {
+                t[i].color = Color.black;
+            } else {
+                t[i].color = Color.white;
+            }
+        }
+    }
 
-	// Changes display of an array of text
-	void TextDisplay(Text[] t, bool display){
-		for (int i = 0; i < t.Length; i++) {
-			t[i].GetComponent<Text>().enabled = display;
-		}
-	}
+    // Changes display of an array of text
+    void TextDisplay(Text[] t, bool display){
+        for (int i = 0; i < t.Length; i++) {
+            t[i].GetComponent<Text>().enabled = display;
+        }
+    }
 
-	// Changes display of an array of gameObjects
-	void ImageDisplay(GameObject[] g, bool display){
-		for (int i = 0; i < g.Length; i++) {
-			g[i].GetComponent<SpriteRenderer>().enabled = display;
-		}
-	}
+    // Changes display of an array of gameObjects
+    void ImageDisplay(GameObject[] g, bool display){
+        for (int i = 0; i < g.Length; i++) {
+            g[i].GetComponent<SpriteRenderer>().enabled = display;
+        }
+    }
 
-	// Looks through all of the possible KeyCodes and determines if that's the one being pressed
-	KeyCode DetermineKey() {
-		int maxKey = System.Enum.GetNames(typeof(KeyCode)).Length;
-		for (int i = 0; i < maxKey; i++) {
-			if (Input.GetKey((KeyCode)i)) {
-				return (KeyCode)i;
-			}
-		}
-		return KeyCode.None;
-	}
+    // Looks through all of the possible KeyCodes and determines if that's the one being pressed
+    KeyCode DetermineKey() {
+        int maxKey = System.Enum.GetNames(typeof(KeyCode)).Length;
+        for (int i = 0; i < maxKey; i++) {
+            if (Input.GetKey((KeyCode)i)) {
+                return (KeyCode)i;
+            }
+        }
+        return KeyCode.None;
+    }
 
-	// Changes the resolution according to a dedicated value
-	void UpdateRes(int res){
-		switch (res) {
-			case 0:
-				Screen.SetResolution(1600, 960, true);
-				break;
-			case 1:
-				Screen.SetResolution(400, 240, false);
-				break;
-			case 2:
-				Screen.SetResolution(800, 480, false);
-				break;
-			case 3:
-				Screen.SetResolution(1600, 960, false);
-				break;
-			default:
-				break;
-		}
-	}
+    // Changes the resolution according to a dedicated value
+    void UpdateRes(int res){
+        switch (res) {
+            case 0:
+                Screen.SetResolution(1600, 960, true);
+                break;
+            case 1:
+                Screen.SetResolution(400, 240, false);
+                break;
+            case 2:
+                Screen.SetResolution(800, 480, false);
+                break;
+            case 3:
+                Screen.SetResolution(1600, 960, false);
+                break;
+            default:
+                break;
+        }
+    }
 
-	// Returns a formatted timer based on a given float
-	public string ToTime(float timer){
-		string theTime = "";
-		int hours = ((int)timer) / 3600;
-		int minutes = (((int)timer) % 3600) / 60;
-		int seconds = (((int)timer) % 3600) % 60;
+    // Returns a formatted timer based on a given float
+    public string ToTime(float timer){
+        string theTime = "";
+        int hours = ((int)timer) / 3600;
+        int minutes = (((int)timer) % 3600) / 60;
+        int seconds = (((int)timer) % 3600) % 60;
 
-		// Hours
-		if (hours < 10)
-			theTime = "0" + hours.ToString();
-		else
-			theTime = hours.ToString();
-		// Minutes
-		if (minutes < 10)
-			theTime += ":0" + minutes.ToString();
-		else
-			theTime += ":" + minutes.ToString();
-		// Seconds
-		if (seconds < 10)
-			theTime += ":0" + seconds.ToString();
-		else
-			theTime += ":" + seconds.ToString();
+        // Hours
+        if (hours < 10)
+            theTime = "0" + hours.ToString();
+        else
+            theTime = hours.ToString();
+        // Minutes
+        if (minutes < 10)
+            theTime += ":0" + minutes.ToString();
+        else
+            theTime += ":" + minutes.ToString();
+        // Seconds
+        if (seconds < 10)
+            theTime += ":0" + seconds.ToString();
+        else
+            theTime += ":" + seconds.ToString();
 
-		return theTime;
-	}
+        return theTime;
+    }
 }

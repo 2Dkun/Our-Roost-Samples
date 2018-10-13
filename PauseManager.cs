@@ -6,159 +6,159 @@ using UnityEngine.SceneManagement;
 
 public class PauseManager : MonoBehaviour {
 
-	// Cameras
-	public Camera main;
-	public Camera pause;
+    // Cameras
+    public Camera main;
+    public Camera pause;
 
-	public GameObject player;
+    public GameObject player;
 
-	// Main variables
-	public TextMeshProUGUI[] mainOpts;
-	private string[] optDes = { 
-		"Use and view items in your inventory.",
-		"View the current skills of your party.",
-		"Change the current equipment on your party.",
-		"Rearrange the party to your fitting.",
-		"Adjust game settings.",
-		"Save the progress you've made so far."
-	};
-	public TextMeshProUGUI description;
-	public TextMeshProUGUI cash;
-	public GameObject desMenu;
-	private int curOpt;
-	private int maxOpt;
+    // Main variables
+    public TextMeshProUGUI[] mainOpts;
+    private string[] optDes = { 
+        "Use and view items in your inventory.",
+        "View the current skills of your party.",
+        "Change the current equipment on your party.",
+        "Rearrange the party to your fitting.",
+        "Adjust game settings.",
+        "Save the progress you've made so far."
+    };
+    public TextMeshProUGUI description;
+    public TextMeshProUGUI cash;
+    public GameObject desMenu;
+    private int curOpt;
+    private int maxOpt;
 
-	// Dealing with submenu
-	public GameObject submenu;
-	public Sprite[] subSprites;
-	public GameObject iSlider;
+    // Dealing with submenu
+    public GameObject submenu;
+    public Sprite[] subSprites;
+    public GameObject iSlider;
 
-	// Variables for slots
-	public TextMeshProUGUI[] names;
-	public TextMeshProUGUI[] level;
-	public TextMeshProUGUI[] hp;
-	public TextMeshProUGUI[] mp;
-	public TextMeshProUGUI[] expBar;
-	public stats[] stat;
-	[System.Serializable]
-	public class stats {
-		public TextMeshProUGUI[] value;
-	}
-	public GameObject[] slot;
-	public GameObject[] portrait;
-	public GameObject[] health;
-	public GameObject[] mana;
-	public GameObject[] exp;
+    // Variables for slots
+    public TextMeshProUGUI[] names;
+    public TextMeshProUGUI[] level;
+    public TextMeshProUGUI[] hp;
+    public TextMeshProUGUI[] mp;
+    public TextMeshProUGUI[] expBar;
+    public stats[] stat;
+    [System.Serializable]
+    public class stats {
+        public TextMeshProUGUI[] value;
+    }
+    public GameObject[] slot;
+    public GameObject[] portrait;
+    public GameObject[] health;
+    public GameObject[] mana;
+    public GameObject[] exp;
 
-	// Menu navigation
-	private enum menu { LOAD, MAIN, ITEMS, SKILLS, EQUIPMENT, ARRANGEMENT, OPTIONS, SAVE };
-	private menu curMenu = menu.LOAD;
-	private itemType curItemMenu = itemType.FIELD;
+    // Menu navigation
+    private enum menu { LOAD, MAIN, ITEMS, SKILLS, EQUIPMENT, ARRANGEMENT, OPTIONS, SAVE };
+    private menu curMenu = menu.LOAD;
+    private itemType curItemMenu = itemType.FIELD;
 
-	// Inventory variables
-	private List<Item> inventory;
-	public TextMeshProUGUI[] itemName;
-	public GameObject[] itemIcons;
-	private readonly Vector2[] sliderPos = {
-		new Vector2(13.13f, -4.449f),
-		new Vector2(13.761f, -4.449f),
-		new Vector2(14.373f, -4.449f),
-		new Vector2(14.985f, -4.449f),
-		new Vector2(15.57f, -4.449f)
-	};
-	private readonly itemType[] itemT = { itemType.FIELD, itemType.BATTLE, itemType.WEAPON, itemType.ARMOR, itemType.KEY };
+    // Inventory variables
+    private List<Item> inventory;
+    public TextMeshProUGUI[] itemName;
+    public GameObject[] itemIcons;
+    private readonly Vector2[] sliderPos = {
+        new Vector2(13.13f, -4.449f),
+        new Vector2(13.761f, -4.449f),
+        new Vector2(14.373f, -4.449f),
+        new Vector2(14.985f, -4.449f),
+        new Vector2(15.57f, -4.449f)
+    };
+    private readonly itemType[] itemT = { itemType.FIELD, itemType.BATTLE, itemType.WEAPON, itemType.ARMOR, itemType.KEY };
 
-	// Skill varaibles
-	private bool charSelecting;
-	public TextMeshProUGUI[] skillInfo;
-	public TextMeshProUGUI[] skillTxt;
+    // Skill varaibles
+    private bool charSelecting;
+    public TextMeshProUGUI[] skillInfo;
+    public TextMeshProUGUI[] skillTxt;
 
-	// Equipment variables
-	private enum equipSel { CHARACTER, TYPE, EQUIP };
-	private equipSel curEq = equipSel.CHARACTER;
-	public TextMeshProUGUI[] equipInfo;
-	public TextMeshProUGUI[] equipSlots;
-	public TextMeshProUGUI[] equipStats;
-	public TextMeshProUGUI guideTxt;
-	public GameObject[] equipSprite;
-	public GameObject statDisplay;
-	public GameObject[] equipIcons;
-	private List<Item> equipList;
-	private readonly armorType[] equipType = { armorType.HEAD, armorType.TORSO, armorType.WEAPON, armorType.WEAPON, armorType.ACCESSORY, armorType.ACCESSORY };
-	private int curEquipSel;
+    // Equipment variables
+    private enum equipSel { CHARACTER, TYPE, EQUIP };
+    private equipSel curEq = equipSel.CHARACTER;
+    public TextMeshProUGUI[] equipInfo;
+    public TextMeshProUGUI[] equipSlots;
+    public TextMeshProUGUI[] equipStats;
+    public TextMeshProUGUI guideTxt;
+    public GameObject[] equipSprite;
+    public GameObject statDisplay;
+    public GameObject[] equipIcons;
+    private List<Item> equipList;
+    private readonly armorType[] equipType = { armorType.HEAD, armorType.TORSO, armorType.WEAPON, armorType.WEAPON, armorType.ACCESSORY, armorType.ACCESSORY };
+    private int curEquipSel;
 
-	// Arrangement variables
-	private int curSel;
+    // Arrangement variables
+    private int curSel;
 
-	// Option variables
-	private enum options { MAIN, CONTROLS, SOUNDS, RESOLUTION, INPUT };
-	private options curOption;
-	public TextMeshProUGUI[] optTxt;
-	public TextMeshProUGUI[] controlTxt;
-	public GameObject controlDis;
-	private KeyCode[] tempControls = new KeyCode[7];
-	public TextMeshProUGUI[] resTxt;
-	private int newResolution;
-	public TextMeshProUGUI[] soundTxt;
-	public TextMeshProUGUI[] soundNum;
-	public GameObject[] slider;
-	private int[] newVolume = new int[3];
-	private int sliderDelay = 0; // Used to delay fast slider movement
+    // Option variables
+    private enum options { MAIN, CONTROLS, SOUNDS, RESOLUTION, INPUT };
+    private options curOption;
+    public TextMeshProUGUI[] optTxt;
+    public TextMeshProUGUI[] controlTxt;
+    public GameObject controlDis;
+    private KeyCode[] tempControls = new KeyCode[7];
+    public TextMeshProUGUI[] resTxt;
+    private int newResolution;
+    public TextMeshProUGUI[] soundTxt;
+    public TextMeshProUGUI[] soundNum;
+    public GameObject[] slider;
+    private int[] newVolume = new int[3];
+    private int sliderDelay = 0; // Used to delay fast slider movement
 
-	// Saving variables
-	private enum save { PROMPT, SAVING };
-	private save curSave = save.PROMPT;
-	public TextMeshProUGUI[] saveTxt;
+    // Saving variables
+    private enum save { PROMPT, SAVING };
+    private save curSave = save.PROMPT;
+    public TextMeshProUGUI[] saveTxt;
 
     // Sound Variables
     public AudioClip select, cancel;
     public GameObject mainSFX;
 
-	// Use this for initialization
-	void Start () {
-		curMenu = menu.LOAD;
-		// Hide all text and slots
-		displayText(mainOpts, false);
-		description.enabled = false;
-		cash.enabled = false;
-		for (int i = 0; i < slot.Length; i++) {
-			names[i].enabled = false;
-			level[i].enabled = false;
-			displayText(stat[i].value, false);
-			displayText(hp, false);
-			displayText(mp, false);
-			displayText(expBar, false);
-		}
-		displayText(saveTxt, false);
-		displayText(optTxt, false);
-		displayText(controlTxt, false);
-		displayText(resTxt, false);
-		displayText(soundTxt, false);
-		displayText(soundNum, false);
-		displayText(equipInfo, false);
-		displayText(equipSlots, false);
-		displayText(equipStats, false);
-		guideTxt.enabled = false;
-		displayText(skillTxt, false);
-		displayText(skillInfo, false);
-		displayText(itemName, false);
-		displaySprite(itemIcons, false);
+    // Use this for initialization
+    void Start () {
+        curMenu = menu.LOAD;
+        // Hide all text and slots
+        displayText(mainOpts, false);
+        description.enabled = false;
+        cash.enabled = false;
+        for (int i = 0; i < slot.Length; i++) {
+            names[i].enabled = false;
+            level[i].enabled = false;
+            displayText(stat[i].value, false);
+            displayText(hp, false);
+            displayText(mp, false);
+            displayText(expBar, false);
+        }
+        displayText(saveTxt, false);
+        displayText(optTxt, false);
+        displayText(controlTxt, false);
+        displayText(resTxt, false);
+        displayText(soundTxt, false);
+        displayText(soundNum, false);
+        displayText(equipInfo, false);
+        displayText(equipSlots, false);
+        displayText(equipStats, false);
+        guideTxt.enabled = false;
+        displayText(skillTxt, false);
+        displayText(skillInfo, false);
+        displayText(itemName, false);
+        displaySprite(itemIcons, false);
 
-		// Update from saved data
-		for (int i = 0; i < 3; i++) {
-			newVolume[i] = DataManager.savedOptions.volume[i]; // Initialize a new volume variable
-			soundNum[i].text = DataManager.savedOptions.volume[i].ToString(); // Update volume amount
-			slider[i].transform.localPosition = new Vector2((DataManager.savedOptions.volume[i] * 0.019f) - 0.95f, 0);
-		}
-		for (int i = 0; i < 7; i++) {
-			tempControls[i] = DataManager.savedOptions.controls[i]; // Update controls
-			controlTxt[i].GetComponent<TextMeshProUGUI>().text = DataManager.savedOptions.controls[i].ToString();
-		}
-		newResolution = DataManager.savedOptions.resolution; // Update resolution
+        // Update from saved data
+        for (int i = 0; i < 3; i++) {
+            newVolume[i] = DataManager.savedOptions.volume[i]; // Initialize a new volume variable
+            soundNum[i].text = DataManager.savedOptions.volume[i].ToString(); // Update volume amount
+            slider[i].transform.localPosition = new Vector2((DataManager.savedOptions.volume[i] * 0.019f) - 0.95f, 0);
+        }
+        for (int i = 0; i < 7; i++) {
+            tempControls[i] = DataManager.savedOptions.controls[i]; // Update controls
+            controlTxt[i].GetComponent<TextMeshProUGUI>().text = DataManager.savedOptions.controls[i].ToString();
+        }
+        newResolution = DataManager.savedOptions.resolution; // Update resolution
     }
-	// Update is called once per frame
-	void Update () {
-		TitleManager.curFile.updateTime();
+    // Update is called once per frame
+    void Update () {
+        TitleManager.curFile.updateTime();
 
         if(DungeonHandler.curState == gameState.MENU) {
             switch(curMenu) {
@@ -1051,154 +1051,154 @@ public class PauseManager : MonoBehaviour {
             }
 
         }
-	}
+    }
 
-	private void updateSlots(List<Ally> party){
-		for (int i = 0; i < slot.Length; i++) {
-			if (party[i].getName().CompareTo("") == 0) {
-				names[i].enabled = false;
-				level[i].enabled = false;
-				displayText(stat[i].value, false);
-				hp[i].enabled = false;
-				mp[i].enabled = false;
-				expBar[i].enabled = false;
-				slot[i].GetComponent<SpriteRenderer>().enabled = false;
-				portrait[i].GetComponent<SpriteRenderer>().enabled = false;
-				health[i].GetComponent<SpriteRenderer>().enabled = false;
-				mana[i].GetComponent<SpriteRenderer>().enabled = false;
-				exp[i].GetComponent<SpriteRenderer>().enabled = false;
-			}
-			else {
-				names[i].enabled = true;
-				level[i].enabled = true;
-				displayText(stat[i].value, true);
-				hp[i].enabled = true;
-				mp[i].enabled = true;
-				expBar[i].enabled = true;
-				slot[i].GetComponent<SpriteRenderer>().enabled = true;
-				portrait[i].GetComponent<SpriteRenderer>().enabled = true;
-				health[i].GetComponent<SpriteRenderer>().enabled = true;
-				mana[i].GetComponent<SpriteRenderer>().enabled = true;
-				exp[i].GetComponent<SpriteRenderer>().enabled = true;
+    private void updateSlots(List<Ally> party){
+        for (int i = 0; i < slot.Length; i++) {
+            if (party[i].getName().CompareTo("") == 0) {
+                names[i].enabled = false;
+                level[i].enabled = false;
+                displayText(stat[i].value, false);
+                hp[i].enabled = false;
+                mp[i].enabled = false;
+                expBar[i].enabled = false;
+                slot[i].GetComponent<SpriteRenderer>().enabled = false;
+                portrait[i].GetComponent<SpriteRenderer>().enabled = false;
+                health[i].GetComponent<SpriteRenderer>().enabled = false;
+                mana[i].GetComponent<SpriteRenderer>().enabled = false;
+                exp[i].GetComponent<SpriteRenderer>().enabled = false;
+            }
+            else {
+                names[i].enabled = true;
+                level[i].enabled = true;
+                displayText(stat[i].value, true);
+                hp[i].enabled = true;
+                mp[i].enabled = true;
+                expBar[i].enabled = true;
+                slot[i].GetComponent<SpriteRenderer>().enabled = true;
+                portrait[i].GetComponent<SpriteRenderer>().enabled = true;
+                health[i].GetComponent<SpriteRenderer>().enabled = true;
+                mana[i].GetComponent<SpriteRenderer>().enabled = true;
+                exp[i].GetComponent<SpriteRenderer>().enabled = true;
 
-				names[i].text = party[i].getName();
-				level[i].text = "Lv. " + party[i].getLevel().ToString();
-				for (int j = 0; j < stat[i].value.Length; j++) {
-					stat[i].value[j].text = party[i].getStats()[j+2].ToString(); 
-				}
-				portrait[i].GetComponent<SpriteRenderer>().sprite = party[i].getFace();
-				// Update hp and mp text display
-				hp[i].text = party[i].getCurHP().ToString() + "/" + party[i].getHP().ToString();
-				mp[i].text = party[i].getCurMP().ToString() + "/" + party[i].getMP().ToString();
-				expBar[i].text = party[i].getCurExp().ToString() + "/" + party[i].getMaxExp().ToString();
-				// Update the meters by their ratios
-				float hpRatio = (float)party[i].getCurHP() / (float)party[i].getHP();
-				float mpRatio = (float)party[i].getCurMP() / (float)party[i].getMP();
-				float expRatio = (float)party[i].getCurExp() / (float)party[i].getMaxExp();
-				health[i].transform.localScale = new Vector2(hpRatio, health[i].transform.localScale.y);
-				mana[i].transform.localScale = new Vector2(mpRatio, mana[i].transform.localScale.y);
-				exp[i].transform.localScale = new Vector2(expRatio, exp[i].transform.localScale.y);
-			}
-		}
-	}
+                names[i].text = party[i].getName();
+                level[i].text = "Lv. " + party[i].getLevel().ToString();
+                for (int j = 0; j < stat[i].value.Length; j++) {
+                    stat[i].value[j].text = party[i].getStats()[j+2].ToString(); 
+                }
+                portrait[i].GetComponent<SpriteRenderer>().sprite = party[i].getFace();
+                // Update hp and mp text display
+                hp[i].text = party[i].getCurHP().ToString() + "/" + party[i].getHP().ToString();
+                mp[i].text = party[i].getCurMP().ToString() + "/" + party[i].getMP().ToString();
+                expBar[i].text = party[i].getCurExp().ToString() + "/" + party[i].getMaxExp().ToString();
+                // Update the meters by their ratios
+                float hpRatio = (float)party[i].getCurHP() / (float)party[i].getHP();
+                float mpRatio = (float)party[i].getCurMP() / (float)party[i].getMP();
+                float expRatio = (float)party[i].getCurExp() / (float)party[i].getMaxExp();
+                health[i].transform.localScale = new Vector2(hpRatio, health[i].transform.localScale.y);
+                mana[i].transform.localScale = new Vector2(mpRatio, mana[i].transform.localScale.y);
+                exp[i].transform.localScale = new Vector2(expRatio, exp[i].transform.localScale.y);
+            }
+        }
+    }
 
-	private void displayText(TextMeshProUGUI[] t, bool display){
-		for (int i = 0; i < t.Length; i++) {
-			t[i].enabled = display;
-		}
-	}
+    private void displayText(TextMeshProUGUI[] t, bool display){
+        for (int i = 0; i < t.Length; i++) {
+            t[i].enabled = display;
+        }
+    }
 
-	private void UpdateText(TextMeshProUGUI[] t, int selection){
-		for(int i = 0; i < t.Length; i++){
-			if(i == selection)
-				t[i].color = Color.black;
-			else
-				t[i].color = Color.white;
-		}
-	}
+    private void UpdateText(TextMeshProUGUI[] t, int selection){
+        for(int i = 0; i < t.Length; i++){
+            if(i == selection)
+                t[i].color = Color.black;
+            else
+                t[i].color = Color.white;
+        }
+    }
 
-	private void displaySprite(GameObject[] s, bool display){
-		for (int i = 0; i < s.Length; i++) {
-			s[i].GetComponent<SpriteRenderer>().enabled = display;
-		}
-	}
+    private void displaySprite(GameObject[] s, bool display){
+        for (int i = 0; i < s.Length; i++) {
+            s[i].GetComponent<SpriteRenderer>().enabled = display;
+        }
+    }
 
-	private void updateSprite(GameObject[] s, int sel){
-		for (int i = 0; i < s.Length; i++) {
-			if (i == sel)
-				s[i].GetComponent<SpriteRenderer>().color = new Color(1, 0.7f, 0.7f);
-			else
-				s[i].GetComponent<SpriteRenderer>().color = Color.white;
-		}
-	}
+    private void updateSprite(GameObject[] s, int sel){
+        for (int i = 0; i < s.Length; i++) {
+            if (i == sel)
+                s[i].GetComponent<SpriteRenderer>().color = new Color(1, 0.7f, 0.7f);
+            else
+                s[i].GetComponent<SpriteRenderer>().color = Color.white;
+        }
+    }
 
-	// Looks through all of the possible KeyCodes and determines if that's the one being pressed
-	private KeyCode DetermineKey() {
-		int maxKey = System.Enum.GetNames(typeof(KeyCode)).Length;
-		for (int i = 0; i < maxKey; i++) {
-			if (Input.GetKey((KeyCode)i)) {
-				return (KeyCode)i;
-			}
-		}
-		return KeyCode.None;
-	}
+    // Looks through all of the possible KeyCodes and determines if that's the one being pressed
+    private KeyCode DetermineKey() {
+        int maxKey = System.Enum.GetNames(typeof(KeyCode)).Length;
+        for (int i = 0; i < maxKey; i++) {
+            if (Input.GetKey((KeyCode)i)) {
+                return (KeyCode)i;
+            }
+        }
+        return KeyCode.None;
+    }
 
-	// Changes the resolution according to a dedicated value
-	private void UpdateRes(int res){
-		switch (res) {
-			case 0:
-				Screen.SetResolution(1600, 960, true);
-				break;
-			case 1:
-				Screen.SetResolution(400, 240, false);
-				break;
-			case 2:
-				Screen.SetResolution(800, 480, false);
-				break;
-			case 3:
-				Screen.SetResolution(800, 480, false);
-				break;
-			default:
-				break;
-		}
-	}
+    // Changes the resolution according to a dedicated value
+    private void UpdateRes(int res){
+        switch (res) {
+            case 0:
+                Screen.SetResolution(1600, 960, true);
+                break;
+            case 1:
+                Screen.SetResolution(400, 240, false);
+                break;
+            case 2:
+                Screen.SetResolution(800, 480, false);
+                break;
+            case 3:
+                Screen.SetResolution(800, 480, false);
+                break;
+            default:
+                break;
+        }
+    }
 
-	// Changes display of current viewed equip
-	private void updateEquipInfo(Item thing){
-		equipInfo[0].text = thing.getName();
-		equipInfo[1].text = thing.getDes();
-		for (int i = 0; i < equipStats.Length; i++) {
-			int value = thing.getStats()[i + 2];
-			if (value > 0) {
-				equipStats[i].color = Color.black;
-				equipStats[i].text = "+" + value.ToString();
-			}
-			else if (value < 0) {
-				equipStats[i].color = Color.red;
-				equipStats[i].text = value.ToString();
-			}
-			else {
-				equipStats[i].color = Color.white;
-				equipStats[i].text = value.ToString();
-			}
-		}
-		equipSprite[0].GetComponent<SpriteRenderer>().sprite = thing.getIcon();
-	}
+    // Changes display of current viewed equip
+    private void updateEquipInfo(Item thing){
+        equipInfo[0].text = thing.getName();
+        equipInfo[1].text = thing.getDes();
+        for (int i = 0; i < equipStats.Length; i++) {
+            int value = thing.getStats()[i + 2];
+            if (value > 0) {
+                equipStats[i].color = Color.black;
+                equipStats[i].text = "+" + value.ToString();
+            }
+            else if (value < 0) {
+                equipStats[i].color = Color.red;
+                equipStats[i].text = value.ToString();
+            }
+            else {
+                equipStats[i].color = Color.white;
+                equipStats[i].text = value.ToString();
+            }
+        }
+        equipSprite[0].GetComponent<SpriteRenderer>().sprite = thing.getIcon();
+    }
 
-	private void UpdateInventoryIcons(){
-		List<Item> curInven = TitleManager.curFile.getInventoryOfType(itemT[curSel]);
-		int start = curOpt / itemName.Length;
-		for(int i = 0; i < itemName.Length; i++){
-			if ((start + i) < maxOpt) {
-				itemName[i].text = curInven[start + i].getName();
-				itemName[i].text += " x" + curInven[start + i].getAmt().ToString();
-				itemIcons[i].GetComponent<SpriteRenderer>().enabled = true;
-				itemIcons[i].GetComponent<SpriteRenderer>().sprite = curInven[start + i].getIcon();
-			}
-			else {
-				itemName[i].text = "------------------------------";
-				itemIcons[i].GetComponent<SpriteRenderer>().enabled = false;
-			}
-		}
-	}
+    private void UpdateInventoryIcons(){
+        List<Item> curInven = TitleManager.curFile.getInventoryOfType(itemT[curSel]);
+        int start = curOpt / itemName.Length;
+        for(int i = 0; i < itemName.Length; i++){
+            if ((start + i) < maxOpt) {
+                itemName[i].text = curInven[start + i].getName();
+                itemName[i].text += " x" + curInven[start + i].getAmt().ToString();
+                itemIcons[i].GetComponent<SpriteRenderer>().enabled = true;
+                itemIcons[i].GetComponent<SpriteRenderer>().sprite = curInven[start + i].getIcon();
+            }
+            else {
+                itemName[i].text = "------------------------------";
+                itemIcons[i].GetComponent<SpriteRenderer>().enabled = false;
+            }
+        }
+    }
 }

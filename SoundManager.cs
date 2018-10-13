@@ -8,10 +8,10 @@ public class SoundManager : MonoBehaviour {
     public GameObject[] bgm;
     public GameObject[] sfx;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         UpdateVolumes();
-	}
+    }
 
     // Update the volume of all volume objects based on current saved data
     public void UpdateVolumes() {
