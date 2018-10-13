@@ -32,7 +32,7 @@ public class DungeonHandler : MonoBehaviour {
 		public string name;
 		public string[] dialouge;
 		public Sprite[] image;
-        public float pitch;
+        	public float pitch;
 		// SHOP
 		public int[] itemIds;
 		public string shopBye;
