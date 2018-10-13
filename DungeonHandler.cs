@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
@@ -15,7 +15,7 @@ public class DungeonHandler : MonoBehaviour {
 
 	public static gameState curState;
 	public static gameState preState;
-    public static bool stopMoving;
+   	public static bool stopMoving;
 	public Camera main; // Main camera for overworld
 	public GameObject player;
 	public string foeSetDataPath;
